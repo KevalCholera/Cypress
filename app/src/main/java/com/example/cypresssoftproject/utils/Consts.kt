@@ -20,6 +20,7 @@ object AlbumTable {
     const val ID = "id"
     const val USER_ID = "userId"
     const val TITLE = "title"
+    const val IMAGE_LIST = "imageList"
 }
 
 object ImageTable {

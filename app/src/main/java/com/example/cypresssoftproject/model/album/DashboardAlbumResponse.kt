@@ -4,6 +4,7 @@ import androidx.annotation.Keep
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.cypresssoftproject.model.images.DashboardImagesResponse
 import com.example.cypresssoftproject.utils.AlbumTable
 import com.example.cypresssoftproject.utils.AlbumTable.ALBUM_TABLE
 import com.google.gson.annotations.SerializedName

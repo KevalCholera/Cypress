@@ -6,18 +6,14 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.cypresssoftproject.database.CypressSoftDatabase
 import com.example.cypresssoftproject.databinding.ItemAlbumBinding
-import com.example.cypresssoftproject.design.dashboard.DashboardActivityViewModel
-import com.example.cypresssoftproject.model.album.DashboardAlbumResponse
 import com.example.cypresssoftproject.model.images.DashboardImagesResponse
-import kotlinx.coroutines.runBlocking
+import com.example.cypresssoftproject.model.merger.DashboardMergerResponse
 
 class DashboardAlbumAdapter(
     private val context: Activity,
-    private val albumResponse: ArrayList<DashboardAlbumResponse>,
-    private val db: CypressSoftDatabase,
-    private val viewModel: DashboardActivityViewModel
+    private val albumResponse: ArrayList<DashboardMergerResponse>,
+    private val isAllImageDownloaded: Boolean
 ) : RecyclerView.Adapter<DashboardAlbumAdapter.AlbumDataViewHolder>() {
     private lateinit var binding: ItemAlbumBinding
 
@@ -26,8 +22,9 @@ class DashboardAlbumAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(
-            responsePositionalData: DashboardAlbumResponse,
-            db: CypressSoftDatabase, context: Activity, viewModel: DashboardActivityViewModel
+            responsePositionalData: DashboardMergerResponse,
+            context: Activity,
+            isAllImageDownloaded: Boolean
         ) {
             binding.rvItemAlbumData.layoutManager =
                 LinearLayoutManager(
@@ -37,33 +34,29 @@ class DashboardAlbumAdapter(
                 )
             binding.rvItemAlbumData.setHasFixedSize(true)
             binding.tvItemAlbumTitle.text = responsePositionalData.title.toString()
-            val albumId = responsePositionalData.id
-            getImageListFromAlbumId(albumId, db, context, viewModel)
+            getImageListFromAlbumId(
+                context,
+                responsePositionalData.imageList,
+                isAllImageDownloaded
+            )
         }
 
         private fun getImageListFromAlbumId(
-            albumId: String,
-            db: CypressSoftDatabase,
             context: Activity,
-            viewModel: DashboardActivityViewModel
+            imageList: List<DashboardImagesResponse>?,
+            isAllImageDownloaded: Boolean
         ) {
-
-            val filteredImageResponse = runBlocking { viewModel.getImageListFromAlbumId(albumId) }
-            Log.i("TAG", "bind: ${filteredImageResponse.size}")
-            setDataInAdapter(filteredImageResponse, context)
-        }
-
-        private fun setDataInAdapter(
-            filteredImageResponse: List<DashboardImagesResponse>,
-            context: Activity
-        ) {
-            val adapter =
-                DashboardImageAdapter(
-                    context,
-                    filteredImageResponse as ArrayList<DashboardImagesResponse>
-                )
-            binding.rvItemAlbumData.adapter = adapter
-            addUnlimitedData(adapter)
+            if (imageList != null) {
+                Log.i("TAG", "bind: ${imageList.size}")
+                val adapter =
+                    DashboardImageAdapter(
+                        context,
+                        imageList as ArrayList<DashboardImagesResponse>,
+                        isAllImageDownloaded
+                    )
+                binding.rvItemAlbumData.adapter = adapter
+                addUnlimitedData(adapter)
+            }
         }
 
         private fun addUnlimitedData(adapter: DashboardImageAdapter) {
@@ -102,7 +95,7 @@ class DashboardAlbumAdapter(
 
     override fun onBindViewHolder(holder: AlbumDataViewHolder, position: Int) {
         val responsePositionalData = albumResponse[position]
-        holder.bind(responsePositionalData, db, context, viewModel)
+        holder.bind(responsePositionalData, context, isAllImageDownloaded)
     }
 
     fun addNewData() {

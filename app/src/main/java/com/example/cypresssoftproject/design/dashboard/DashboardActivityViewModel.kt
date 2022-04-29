@@ -1,11 +1,10 @@
 package com.example.cypresssoftproject.design.dashboard
 
-import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cypresssoftproject.base.LiveCoroutinesViewModel
 import com.example.cypresssoftproject.base.Status
 import com.example.cypresssoftproject.model.album.DashboardAlbumResponse
 import com.example.cypresssoftproject.model.album.DashboardAlbumViewState
@@ -18,11 +17,11 @@ import com.example.cypresssoftproject.utils.STATUS_CODE_INTERNAL_ERROR
 import com.example.cypresssoftproject.utils.STATUS_CODE_SUCCESS
 import com.example.cypresssoftproject.utils.STATUS_CODE_TOKEN_EXPIRE
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class DashboardActivityViewModel(
-    val context: DashboardActivity,
     private val dashboardRepository: DashboardRepository
-) : LiveCoroutinesViewModel() {
+) : ViewModel() {
 
     private var _dashboardAlbumResponse: MutableLiveData<DashboardAlbumViewState> =
         MutableLiveData()
@@ -52,7 +51,7 @@ class DashboardActivityViewModel(
         getAlbumList()
     }
 
-    private fun getAlbumList() {
+    internal fun getAlbumList() {
 
         _dashboardAlbumResponse.postValue(
             DashboardAlbumViewState(
@@ -260,21 +259,19 @@ class DashboardActivityViewModel(
         return dashboardAlbumResponse.value?.response
     }
 
-    override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
-        propertyChangeRegistry.remove(callback)
-    }
+    fun getPendingImageDownloadList(): List<DashboardImagesResponse> =
+        runBlocking { dashboardRepository.getPendingImageDownloadList() }
 
-    override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
-        propertyChangeRegistry.add(callback)
-    }
+    fun updateImageLocal(id: String, localUrl: String) =
+        runBlocking { dashboardRepository.updateImageLocal(id, localUrl) }
 
-    suspend fun getDownloadList(): List<DashboardImagesResponse> = dashboardRepository.getDownloadList()
+    fun getImageListFromAlbumId(albumId: String) =
+        runBlocking { dashboardRepository.getImageListFromAlbumId(albumId) }
 
-    suspend fun updateImageLocal(id: String, localUrl: String) = dashboardRepository.updateImageLocal(id, localUrl)
+    fun getImageFromImageId(imageId: String) =
+        runBlocking { dashboardRepository.getImageFromImageId(imageId) }
 
-    suspend fun getImageListFromAlbumId(albumId: String) = dashboardRepository.getImageListFromAlbumId(albumId)
-
-    suspend fun getImageFromImageId(imageId: String) = dashboardRepository.getImageFromImageId(imageId)
+    fun getMergerOfTwoResponse() = runBlocking { dashboardRepository.getMergerOfTwoResponse() }
 
 
 }

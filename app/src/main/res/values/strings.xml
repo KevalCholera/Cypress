@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Cypress Softproject</string>
+    <string name="important_message">Important Message:-</string>
 </resources>

@@ -24,7 +24,7 @@ interface ImageDao {
     fun getImageFromImageId(imageId: String): String?
 
     @Query("SELECT * FROM $IMAGE_TABLE WHERE NULLIF($LOCAL_URL, '') IS NULL")
-    fun getDownloadList(): List<DashboardImagesResponse>
+    fun getPendingImageDownloadList(): List<DashboardImagesResponse>
 
     @Query("UPDATE $IMAGE_TABLE SET ${LOCAL_URL}=:url WHERE ${ID}=:id")
     fun updateImageLocal(id: String, url: String)

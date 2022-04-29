@@ -8,14 +8,47 @@
         android:layout_height="match_parent"
         tools:context=".design.dashboard.DashboardActivity">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvDashboard"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:overScrollMode="never"
-            android:scrollbars="none"
-            tools:itemCount="100"
-            tools:listitem="@layout/item_album" />
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tvDashboardMessageTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:gravity="center"
+                android:text="@string/important_message"
+                android:textColor="@android:color/holo_red_dark"
+                android:textSize="@dimen/_12sdp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvDashboardMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tvDashboardMessageTitle"
+                app:layout_constraintTop_toBottomOf="@+id/tvDashboardMessageTitle"
+                tools:text="Below Data is Fetched from Room Database. It will fetch all data and then after progress bar will be disappear." />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvDashboard"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:overScrollMode="never"
+                android:scrollbars="none"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvDashboardMessage"
+                tools:itemCount="100"
+                tools:listitem="@layout/item_album" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ProgressBar
             android:id="@+id/progressCircular"

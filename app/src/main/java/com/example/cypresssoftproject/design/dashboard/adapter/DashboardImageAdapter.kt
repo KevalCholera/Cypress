@@ -1,7 +1,6 @@
 package com.example.cypresssoftproject.design.dashboard.adapter
 
 import android.app.Activity
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -18,23 +17,25 @@ import java.util.*
 
 class DashboardImageAdapter(
     private val context: Activity,
-    private val imageResponse: ArrayList<DashboardImagesResponse>
+    private val imageResponse: ArrayList<DashboardImagesResponse>,
+    private val isAllImageDownloaded: Boolean
 ) : RecyclerView.Adapter<DashboardImageAdapter.ImageDataViewHolder>() {
     lateinit var binding: ItemImagesBinding
 
     class ImageDataViewHolder(
         val context: Activity,
-        val binding: ItemImagesBinding
+        private val binding: ItemImagesBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(
-            responsePositionalData: DashboardImagesResponse
+            responsePositionalData: DashboardImagesResponse,
+            isAllImageDownloaded: Boolean
         ) {
 
             val url = responsePositionalData.url
             val localUrl = responsePositionalData.localUrl
 
-            if (localUrl == null) {
+            if (!isAllImageDownloaded) {
                 val theImage = GlideUrl(
                     url, LazyHeaders.Builder()
                         .addHeader("User-Agent", "5")
@@ -44,18 +45,16 @@ class DashboardImageAdapter(
                     .fitCenter()
                     .priority(Priority.HIGH)
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                Log.i("TAG", "bind: hasLocalUrl -- API")
                 setImageToImageView(theImage, requestOptions)
             } else {
-                Log.i("TAG", "bind: hasLocalUrl -- LOCAL")
                 setImageToImageView(localUrl.toString())
             }
         }
 
-        fun setImageToImageView(hasLocalUrl: GlideUrl, requestOptions: RequestOptions) {
+        private fun setImageToImageView(liveUrl: GlideUrl, requestOptions: RequestOptions) {
 
             Glide.with(context)
-                .load(hasLocalUrl)
+                .load(liveUrl)
                 .error(R.drawable.ic_baseline_electric_scooter_24)
                 .thumbnail(
                     Glide.with(binding.ivItemImages.context)
@@ -65,11 +64,14 @@ class DashboardImageAdapter(
                 .into(binding.ivItemImages)
         }
 
-        fun setImageToImageView(hasLocalUrl: String) {
+        private fun setImageToImageView(localUrl: String) {
 
             Glide.with(context)
-                .load(hasLocalUrl)
-                .placeholder(R.drawable.ic_baseline_electric_scooter_24)
+                .load(localUrl)
+                .thumbnail(
+                    Glide.with(binding.ivItemImages.context)
+                        .load(R.drawable.gif_skeleton_effect)
+                )
                 .into(binding.ivItemImages)
         }
     }
@@ -95,7 +97,7 @@ class DashboardImageAdapter(
     override fun onBindViewHolder(holder: ImageDataViewHolder, position: Int) {
         val responsePositionalData = imageResponse[position]
 
-        holder.bind(responsePositionalData)
+        holder.bind(responsePositionalData, isAllImageDownloaded)
     }
 
     fun addNewData() {

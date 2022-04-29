@@ -2,30 +2,19 @@ package com.example.cypresssoftproject.app
 
 import android.app.Application
 import android.content.Context
-import com.example.cypresssoftproject.utils.PrefUtils
+import com.example.cypresssoftproject.utils.ConnectivityReceiver
 
-class AppController : Application() {
-    lateinit var objSharedPref: PrefUtils
-    private val TAG = "AppController"
-
+class AppController : Application(){
     override fun onCreate() {
         super.onCreate()
-        objSharedPref = PrefUtils(this@AppController)
         instance = this
     }
-
     companion object {
         lateinit var instance: AppController
 
-        fun getContext(): Context {
-            return instance
-        }
     }
 
-    fun getAppContext(): AppController {
-        return instance
+    fun setConnectivityListener(listener: ConnectivityReceiver.ConnectivityReceiverListener) {
+        ConnectivityReceiver.connectivityReceiverListener = listener
     }
-
 }
-
-
