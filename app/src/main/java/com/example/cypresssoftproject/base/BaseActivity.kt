@@ -3,12 +3,16 @@ package com.example.cypresssoftproject.base
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.IntentFilter
 import android.graphics.Bitmap
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import com.example.cypresssoftproject.app.AppController
 import com.example.cypresssoftproject.database.CypressSoftDatabase
 import com.example.cypresssoftproject.service.RetrofitService
+import com.example.cypresssoftproject.utils.ConnectivityReceiver
 import com.example.cypresssoftproject.utils.NetworkHelper
 import java.io.File
 import java.io.FileOutputStream
@@ -17,12 +21,14 @@ import java.io.OutputStream
 import java.util.*
 
 
-open class BaseActivity : DataBindingActivity() {
+open class BaseActivity : DataBindingActivity(),
+    ConnectivityReceiver.ConnectivityReceiverListener {
     val TAG = "ET--" + javaClass.simpleName
 
     lateinit var retrofitService: RetrofitService
     lateinit var networkHelper: NetworkHelper
     lateinit var db: CypressSoftDatabase
+    lateinit var connectivityReceiver: ConnectivityReceiver
 
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,6 +36,18 @@ open class BaseActivity : DataBindingActivity() {
         retrofitService = RetrofitService.getInstance()
         networkHelper = NetworkHelper(this)
         db = CypressSoftDatabase.getDatabaseData(this)
+
+        connectivityReceiver = ConnectivityReceiver()
+
+        try {
+            registerReceiver(
+                ConnectivityReceiver(),
+                IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+            )
+        } catch (e: Exception) {
+            Log.e("Log", "Log==>" + e.printStackTrace())
+        }
+
     }
 
     fun logI(tag: String, msg: String) {
@@ -79,5 +97,24 @@ open class BaseActivity : DataBindingActivity() {
         }
         val compressedBitmap = Bitmap.createScaledBitmap(image, width, height, true)
         return compressedBitmap ?: image
+    }
+
+    override fun onNetworkConnectionChanged(isConnected: Boolean) {
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AppController.instance.setConnectivityListener(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        try {
+            if (this::connectivityReceiver.isInitialized)
+                unregisterReceiver(connectivityReceiver)
+        } catch (e: Exception) {
+            Log.e(TAG, "onStop: connectivityReceiver ${e.message}")
+        }
     }
 }

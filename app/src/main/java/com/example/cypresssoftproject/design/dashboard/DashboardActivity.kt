@@ -1,12 +1,9 @@
 package com.example.cypresssoftproject.design.dashboard
 
-import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import android.net.ConnectivityManager
 import android.os.Bundle
 import android.text.format.Formatter.formatShortFileSize
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,7 +14,6 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.cypresssoftproject.R
-import com.example.cypresssoftproject.app.AppController
 import com.example.cypresssoftproject.base.BaseActivity
 import com.example.cypresssoftproject.base.Status
 import com.example.cypresssoftproject.databinding.ActivityDashboardBinding
@@ -25,20 +21,15 @@ import com.example.cypresssoftproject.design.dashboard.adapter.DashboardAlbumAda
 import com.example.cypresssoftproject.design.dashboard.interf.DashboardTitleChangeInterf
 import com.example.cypresssoftproject.model.merger.DashboardMergerResponse
 import com.example.cypresssoftproject.repository.DashboardRepository
-import com.example.cypresssoftproject.utils.ConnectivityReceiver
-import com.google.gson.Gson
 import java.io.File
 
-
-class DashboardActivity : BaseActivity(), DashboardTitleChangeInterf,
-    ConnectivityReceiver.ConnectivityReceiverListener {
+class DashboardActivity : BaseActivity(), DashboardTitleChangeInterf {
     private val binding: ActivityDashboardBinding by binding(R.layout.activity_dashboard)
 
     private lateinit var viewModel: DashboardActivityViewModel
     lateinit var albumAdapter: DashboardAlbumAdapter
-    var alreadyStartedDownload = false
-    lateinit var connectivityReceiver: ConnectivityReceiver
-    var isAllImageDownloaded = false
+    private var alreadyStartedDownload = false
+    private var isAllImageDownloaded = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,17 +51,6 @@ class DashboardActivity : BaseActivity(), DashboardTitleChangeInterf,
                 )
             )
         )[DashboardActivityViewModel::class.java]
-
-        connectivityReceiver = ConnectivityReceiver()
-
-        try {
-            registerReceiver(
-                ConnectivityReceiver(),
-                IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-            )
-        } catch (e: Exception) {
-            Log.e("Log", "Log==>" + e.printStackTrace())
-        }
     }
 
     private fun responseObservors() {
@@ -104,14 +84,7 @@ class DashboardActivity : BaseActivity(), DashboardTitleChangeInterf,
                     binding.progressCircular.visibility = View.GONE
                     val albumResponse = viewModel.getAlbumListLiveResponse()
                     if (albumResponse != null) {
-
-
-                        val mergerOfTwoResponse = viewModel.getMergerOfTwoResponse()
-                        val jsonResponseOfMergerData = Gson().toJson(mergerOfTwoResponse)
-                        Log.i(TAG, "responseObservors: $jsonResponseOfMergerData")
-
-                        setAlbumAdapter(mergerOfTwoResponse)
-
+                        setAlbumAdapter(viewModel.getMergerOfTwoResponse())
                     }
                 }
                 Status.ERROR -> {
@@ -154,7 +127,7 @@ class DashboardActivity : BaseActivity(), DashboardTitleChangeInterf,
         binding.rvDashboard.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 val layoutManager = LinearLayoutManager::class.java.cast(recyclerView.layoutManager)
-                val totalItemCount = layoutManager.itemCount
+                val totalItemCount = layoutManager!!.itemCount
                 val lastVisible = layoutManager.findLastVisibleItemPosition()
                 val endHasBeenReached = lastVisible + 5 >= totalItemCount
                 if (totalItemCount > 0 && endHasBeenReached) {
@@ -168,7 +141,6 @@ class DashboardActivity : BaseActivity(), DashboardTitleChangeInterf,
         albumResponse: List<DashboardMergerResponse>
     ) {
         isAllImageDownloaded = viewModel.getPendingImageDownloadList().isEmpty()
-        Log.i(TAG, "setAlbumAdapter: $isAllImageDownloaded")
 
         albumAdapter =
             DashboardAlbumAdapter(
@@ -220,11 +192,10 @@ class DashboardActivity : BaseActivity(), DashboardTitleChangeInterf,
                                     fileOriginal.length()
                                 )
 
-                            Log.i(TAG, "onResourceReady: $fileSizeOriginal")
-
                             viewModel.updateImageLocal(
                                 dataImageResponse.id,
-                                bitmapToUri
+                                bitmapToUri,
+                                fileSizeOriginal
                             )
                         }
 
@@ -245,26 +216,10 @@ class DashboardActivity : BaseActivity(), DashboardTitleChangeInterf,
         if (viewModel.getMergerOfTwoResponse().isEmpty()) {
             viewModel.getAlbumList()
         } else {
-            logI("check", alreadyStartedDownload.toString())
             if (isConnected && !alreadyStartedDownload)
                 downloadImages()
             else
                 alreadyStartedDownload = false
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        AppController.instance.setConnectivityListener(this)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        try {
-            if (this::connectivityReceiver.isInitialized)
-                unregisterReceiver(connectivityReceiver)
-        } catch (e: Exception) {
-            Log.e(TAG, "onStop: connectivityReceiver ${e.message}")
         }
     }
 }

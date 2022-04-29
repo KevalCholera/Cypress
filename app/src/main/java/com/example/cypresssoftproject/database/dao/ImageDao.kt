@@ -6,6 +6,7 @@ import com.example.cypresssoftproject.utils.ImageTable.ALBUM_ID
 import com.example.cypresssoftproject.utils.ImageTable.ID
 import com.example.cypresssoftproject.utils.ImageTable.IMAGE_TABLE
 import com.example.cypresssoftproject.utils.ImageTable.LOCAL_URL
+import com.example.cypresssoftproject.utils.ImageTable.SIZE
 
 @Entity(tableName = IMAGE_TABLE)
 @Dao
@@ -26,6 +27,6 @@ interface ImageDao {
     @Query("SELECT * FROM $IMAGE_TABLE WHERE NULLIF($LOCAL_URL, '') IS NULL")
     fun getPendingImageDownloadList(): List<DashboardImagesResponse>
 
-    @Query("UPDATE $IMAGE_TABLE SET ${LOCAL_URL}=:url WHERE ${ID}=:id")
-    fun updateImageLocal(id: String, url: String)
+    @Query("UPDATE $IMAGE_TABLE SET ${LOCAL_URL}=:url, ${SIZE}=:size WHERE ${ID}=:id")
+    fun updateImageLocal(id: String, url: String, size: String)
 }

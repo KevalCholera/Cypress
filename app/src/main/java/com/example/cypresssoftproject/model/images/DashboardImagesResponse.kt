@@ -31,5 +31,8 @@ data class DashboardImagesResponse(
     val localUrl: String?,
     @ColumnInfo(name = ImageTable.LOCAL_THUMBNAIL_URL)
     @SerializedName("localThumbnailUrl")
-    val localThumbnailUrl: String?
+    val localThumbnailUrl: String?,
+    @ColumnInfo(name = ImageTable.SIZE)
+    @SerializedName("size")
+    val size: String?
 )

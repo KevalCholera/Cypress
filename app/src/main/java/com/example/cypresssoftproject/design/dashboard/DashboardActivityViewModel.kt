@@ -1,6 +1,5 @@
 package com.example.cypresssoftproject.design.dashboard
 
-import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -44,8 +43,6 @@ class DashboardActivityViewModel(
         get() {
             return _dashboardSingleImagesResponse
         }
-
-    private val propertyChangeRegistry = PropertyChangeRegistry()
 
     init {
         getAlbumList()
@@ -262,8 +259,8 @@ class DashboardActivityViewModel(
     fun getPendingImageDownloadList(): List<DashboardImagesResponse> =
         runBlocking { dashboardRepository.getPendingImageDownloadList() }
 
-    fun updateImageLocal(id: String, localUrl: String) =
-        runBlocking { dashboardRepository.updateImageLocal(id, localUrl) }
+    fun updateImageLocal(id: String, localUrl: String, size: String) =
+        runBlocking { dashboardRepository.updateImageLocal(id, localUrl, size) }
 
     fun getImageListFromAlbumId(albumId: String) =
         runBlocking { dashboardRepository.getImageListFromAlbumId(albumId) }

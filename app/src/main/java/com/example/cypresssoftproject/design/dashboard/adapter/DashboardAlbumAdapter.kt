@@ -1,7 +1,7 @@
 package com.example.cypresssoftproject.design.dashboard.adapter
 
+import android.annotation.SuppressLint
 import android.app.Activity
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -47,7 +47,6 @@ class DashboardAlbumAdapter(
             isAllImageDownloaded: Boolean
         ) {
             if (imageList != null) {
-                Log.i("TAG", "bind: ${imageList.size}")
                 val adapter =
                     DashboardImageAdapter(
                         context,
@@ -64,7 +63,7 @@ class DashboardAlbumAdapter(
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     val layoutManager =
                         LinearLayoutManager::class.java.cast(recyclerView.layoutManager)
-                    val totalItemCount = layoutManager.itemCount
+                    val totalItemCount = layoutManager!!.itemCount
                     val lastVisible = layoutManager.findLastVisibleItemPosition()
                     val endHasBeenReached = lastVisible + 5 >= totalItemCount
                     if (totalItemCount > 0 && endHasBeenReached) {
@@ -98,6 +97,7 @@ class DashboardAlbumAdapter(
         holder.bind(responsePositionalData, context, isAllImageDownloaded)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun addNewData() {
         albumResponse.addAll(albumResponse)
         notifyDataSetChanged()

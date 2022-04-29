@@ -100,8 +100,8 @@ class DashboardRepository(
     internal suspend fun getPendingImageDownloadList(): List<DashboardImagesResponse> =
         withContext(Dispatchers.IO) { db.tableImageDao().getPendingImageDownloadList() }
 
-    internal suspend fun updateImageLocal(id: String, localUrl: String) =
-        withContext(Dispatchers.IO) { db.tableImageDao().updateImageLocal(id, localUrl) }
+    internal suspend fun updateImageLocal(id: String, localUrl: String, size: String) =
+        withContext(Dispatchers.IO) { db.tableImageDao().updateImageLocal(id, localUrl, size) }
 
     private suspend fun getAlbumFromDatabase(): List<DashboardAlbumResponse> =
         withContext(Dispatchers.IO) {

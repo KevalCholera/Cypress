@@ -1,5 +1,6 @@
 package com.example.cypresssoftproject.design.dashboard.adapter
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -20,7 +21,7 @@ class DashboardImageAdapter(
     private val imageResponse: ArrayList<DashboardImagesResponse>,
     private val isAllImageDownloaded: Boolean
 ) : RecyclerView.Adapter<DashboardImageAdapter.ImageDataViewHolder>() {
-    lateinit var binding: ItemImagesBinding
+    private lateinit var binding: ItemImagesBinding
 
     class ImageDataViewHolder(
         val context: Activity,
@@ -100,6 +101,7 @@ class DashboardImageAdapter(
         holder.bind(responsePositionalData, isAllImageDownloaded)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun addNewData() {
         imageResponse.addAll(imageResponse)
         notifyDataSetChanged()

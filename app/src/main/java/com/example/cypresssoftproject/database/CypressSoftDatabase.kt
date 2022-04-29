@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
 import com.example.cypresssoftproject.database.dao.AlbumDao
 import com.example.cypresssoftproject.database.dao.ImageDao
 import com.example.cypresssoftproject.database.dao.SingleImageDao
@@ -18,7 +17,6 @@ import com.example.cypresssoftproject.utils.PrefUtilsConstants.DATABASE_NAME
     version = 1,
     exportSchema = true
 )
-@TypeConverters(Conveter::class)
 abstract class CypressSoftDatabase : RoomDatabase() {
 
     abstract fun tableAlbumDao(): AlbumDao

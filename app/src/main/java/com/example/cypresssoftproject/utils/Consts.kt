@@ -20,25 +20,23 @@ object AlbumTable {
     const val ID = "id"
     const val USER_ID = "userId"
     const val TITLE = "title"
-    const val IMAGE_LIST = "imageList"
 }
 
 object ImageTable {
     const val IMAGE_TABLE = "imageTable"
     const val ID = "id"
-    const val USER_ID = "userId"
     const val ALBUM_ID = "albumId"
     const val TITLE = "title"
     const val URL = "url"
     const val LOCAL_URL = "localUrl"
     const val THUMBNAIL_URL = "thumbnailUrl"
     const val LOCAL_THUMBNAIL_URL = "localThumbnailUrl"
+    const val SIZE = "size"
 }
 
 object SingleImageTable {
     const val SINGLE_IMAGE_TABLE = "singleImageTable"
     const val ID = "id"
-    const val USER_ID = "userId"
     const val ALBUM_ID = "albumId"
     const val TITLE = "title"
     const val URL = "url"

@@ -31,15 +31,13 @@ interface RetrofitService {
 
     companion object {
 
-        val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-        var httpClient = OkHttpClient.Builder().addInterceptor(logging)
+        private val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+        private var httpClient = OkHttpClient.Builder().addInterceptor(logging)
 
-        var retrofitService: RetrofitService? = null
+        private var retrofitService: RetrofitService? = null
         fun getInstance(): RetrofitService {
             if (retrofitService == null) {
                 val retrofit = Retrofit.Builder()
-//                    .baseUrl("https://howtodoandroid.com/")
-//                    .baseUrl("https://reqres.in/api/")
                     .baseUrl(apiUrl.API_URL)
                     .client(httpClient.build())
                     .addConverterFactory(GsonConverterFactory.create())
@@ -48,7 +46,5 @@ interface RetrofitService {
             }
             return retrofitService!!
         }
-
     }
-
 }
